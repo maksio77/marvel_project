@@ -3,6 +3,7 @@ import MarvelService from '../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMassage from '../errorMessage/ErrorMassage';
 
+
 import './randomChar.scss';
 import mjolnir from '../../resources/img/mjolnir.png';
 
@@ -12,23 +13,23 @@ class RandomChar extends Component {
         loading: true,
         error: false
     }
-    
+
     marvelService = new MarvelService();
 
-    componentDidMount(){
+    componentDidMount() {
         this.updateChar();
-        //this.timerID = setInterval(this.updateChar, 3000);
+        // this.timerId = setInterval(this.updateChar, 15000);
     }
 
-    componentWillUnmount(){
-        clearInterval(this.timerID);
+    componentWillUnmount() {
+        clearInterval(this.timerId);
     }
 
-    onError = () => {
+    onCharLoaded = (char) => {
         this.setState({
-            loading: false,
-            error: true
-        });
+            char, 
+            loading: false
+        })
     }
 
     onCharLoading = () => {
@@ -36,12 +37,12 @@ class RandomChar extends Component {
             loading: true
         })
     }
-    
-    onCharLoaded = (char) => {
+
+    onError = () => {
         this.setState({
-            char,
-            loading: false
-        });
+            loading: false,
+            error: true
+        })
     }
 
     updateChar = () => {
@@ -50,14 +51,15 @@ class RandomChar extends Component {
         this.marvelService
             .getCharacter(id)
             .then(this.onCharLoaded)
-            .catch(this.onError)
+            .catch(this.onError);
     }
 
     render() {
+
         const {char, loading, error} = this.state;
-        const errorMessage = error? <ErrorMassage/> : null;
-        const spinner = loading? <Spinner/> : null;
-        const content = !(loading || error) ? <Viev char={char}/>: null;
+        const errorMessage = error ? <ErrorMassage/> : null;
+        const spinner = loading ? <Spinner/> : null;
+        const content = !(loading || error) ? <View char={char}/> : null;
 
         return (
             <div className="randomchar">
@@ -82,15 +84,14 @@ class RandomChar extends Component {
     }
 }
 
-const Viev = ({char}) => {
+const View = ({char}) => {
     const {name, description, thumbnail, homepage, wiki} = char;
-
-    let imgStyle= {'objectFit': 'cover'};
-    if(thumbnail==='http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'){
-        imgStyle={'objectFit': 'contain'};
+    let imgStyle = {'objectFit' : 'cover'};
+    if (thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
+        imgStyle = {'objectFit' : 'contain'};
     }
 
-    return(
+    return (
         <div className="randomchar__block">
             <img src={thumbnail} alt="Random character" className="randomchar__img" style={imgStyle}/>
             <div className="randomchar__info">
